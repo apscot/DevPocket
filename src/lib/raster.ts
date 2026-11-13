@@ -10,7 +10,7 @@ export async function svgToPng(svg: string, scale = 3, bg = '#ffffff'): Promise<
     await new Promise<void>((res, rej) => { img.onload = () => res(); img.onerror = () => rej(new Error('Could not rasterize the diagram')); img.src = url })
     const c = document.createElement('canvas'); c.width = Math.round(w * k); c.height = Math.round(h * k)
     const x = c.getContext('2d'); if (!x) throw new Error('Canvas is not available')
-    x.fillStyle = bg; x.fillRect(0, 0, c.width, c.height); x.imageSmoothingQuality = 'high'; x.drawImage(img, 0, 0, c.width, c.height)
+    if (bg !== 'transparent') { x.fillStyle = bg; x.fillRect(0, 0, c.width, c.height) } x.imageSmoothingQuality = 'high'; x.drawImage(img, 0, 0, c.width, c.height)
     const blob = await new Promise<Blob | null>((res) => c.toBlob(res, 'image/png'))
     if (!blob) throw new Error('PNG encoding failed')
     return { blob, w, h }

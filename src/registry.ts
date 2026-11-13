@@ -119,6 +119,8 @@ const rows: Row[] = [
   ['number-base', 'Number Base Converter', 'datetime', 'Binary', 'Binary, octal, decimal and hex without precision loss.', 'number base binary hex octal decimal'],
   ['css-unit-converter', 'CSS Unit Converter', 'datetime', 'Ruler', 'Convert px, rem, em, pt, vw and more.', 'css unit px rem em pt'],
   // G — visual
+  ['diagram-editor', 'Diagram Editor (draw.io style)', 'visual', 'LayoutTemplate', 'Draw flowcharts, UML and architecture diagrams with smart connectors, a shape library, Mermaid import and draw.io export.', 'diagram editor drawio draw.io diagrams.net flowchart uml architecture erd visio lucidchart connectors', 1],
+  ['whiteboard', 'Whiteboard', 'visual', 'PenLine', 'Infinite canvas with pen, highlighter, sticky notes, shapes, arrows and a hand-drawn look. Export PNG, SVG or PDF.', 'whiteboard excalidraw miro sketch draw pen sticky notes brainstorm freehand canvas', 1],
   ['mermaid-editor', 'Mermaid Diagram Editor', 'visual', 'Workflow', 'Edit and render Mermaid diagrams, export SVG.', 'mermaid diagram flowchart sequence svg'],
   ['svg-editor', 'SVG Preview & Editor', 'visual', 'Shapes', 'Sanitized SVG preview, inspection and editing.', 'svg preview editor viewbox'],
   ['color-picker', 'Color Picker', 'visual', 'Pipette', 'Pick colors and copy HEX, RGB and HSL.', 'color picker hex rgb hsl'],

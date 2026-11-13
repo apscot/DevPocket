@@ -7,7 +7,7 @@ test.describe('Homepage & shell', () => {
   test('renders branding, featured tools, categories and counts', async ({ page }) => {
     await page.goto('./')
     await expect(page.getByRole('heading', { name: 'DevPocket', level: 1 })).toBeVisible()
-    await expect(page.getByText('101 developer utilities')).toBeVisible()
+    await expect(page.getByText('103 developer utilities')).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Featured' })).toBeVisible()
     await expect(page.getByTestId('card-json-formatter')).toBeVisible()
     for (const c of ['data', 'java', 'security', 'devops', 'text', 'datetime', 'visual', 'browser']) await expect(page.getByTestId(`cat-${c}`)).toBeVisible()
@@ -52,7 +52,7 @@ test.describe('Homepage & shell', () => {
     await expect(page.getByTestId('tool-title')).toHaveText('JWT Decoder')
     await page.getByRole('link', { name: 'All Tools' }).click()
     await expect(page.getByRole('heading', { name: 'All Tools' })).toBeVisible()
-    await expect(page.locator('[data-testid^="card-"]')).toHaveCount(101)
+    await expect(page.locator('[data-testid^="card-"]')).toHaveCount(103)
     await page.getByRole('link', { name: 'Home', exact: true }).click()
     await expect(page.getByRole('heading', { name: 'DevPocket', level: 1 })).toBeVisible()
   })

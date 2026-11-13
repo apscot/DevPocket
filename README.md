@@ -1,11 +1,11 @@
 # DevPocket
 
-**101 privacy-first developer utilities that run entirely in your browser.**
+**103 privacy-first developer utilities that run entirely in your browser.**
 No backend, no accounts, no analytics, no uploads — all processing is local, and the app keeps working offline after its first load.
 
 JSON · Spring Boot / Java · YAML & SQL · JWT & hashing · Docker / Git / Kubernetes · logs · dates & cron · Mermaid / SVG / colors · regex / XPath / JSONPath · and more.
 
-## Tools (101)
+## Tools (103)
 
 | Category | Count | Tools |
 |---|---|---|
@@ -15,7 +15,7 @@ JSON · Spring Boot / Java · YAML & SQL · JWT & hashing · Docker / Git / Kube
 | **DevOps & Config** | 15 | .env Toolkit · .env Comparator · .gitignore Generator · Dockerfile Generator · Docker Compose Generator · GitHub Actions Generator · GitHub Actions Explainer · CIDR/Subnet Calculator · Docker Commands · Tar Commands · Disk Usage (`du`) · Git Helper · Kubernetes Cheatsheet · MySQL Commands · PostgreSQL Commands |
 | **Text, Logs & Productivity** | 15 | Text Toolbox · Case Converter · Word Counter · Invisible Character Detector · Log & Privacy Workbench · Java Log Comparator · Log Timestamp Converter · Text Deduplicator · Markdown Viewer & Exporter (Mermaid → Azure DevOps wiki / Word / PDF) · Markdown Table Generator · Clipboard Text Cleaner · Template String Replacer · ASCII Directory Tree · ASCII Art Generator · Keyboard Event Viewer |
 | **Date, Time & Calculation** | 9 | Date Difference · Timezone Comparator · Cron Builder (Unix / Spring / Quartz) · Stopwatch · Countdown · Snowflake ID Decoder · Discord Timestamp Generator · Number Base Converter · CSS Unit Converter |
-| **Visual, Diagram & Design** | 8 | Mermaid Editor · SVG Preview & Editor · Color Picker · Contrast Checker · HEX/RGB/HSL Converter · Palette Generator · Box Shadow Generator · Code Screenshot Generator |
+| **Visual, Diagram & Design** | 10 | **Diagram Editor** (draw.io-style: shape library, smart connectors, Mermaid import, `.drawio` import/export) · **Whiteboard** (infinite canvas: pen, sticky notes, shapes, hand-drawn look) · Mermaid Editor · SVG Preview & Editor · Color Picker · Contrast Checker · HEX/RGB/HSL Converter · Palette Generator · Box Shadow Generator · Code Screenshot Generator |
 | **Browser Utilities** | 7 | Regex Playground · XPath Tester · JSONPath Playground · QR Code Reader · HTML Entities · UTM Builder · LLM Token Counter |
 
 The catalog lives in [`src/registry.ts`](src/registry.ts) and drives the homepage, search, categories, navigation, favorites, recents and routing. Each tool is a lazily loaded module in [`src/tools/`](src/tools) whose file name equals its registry `id` (a unit test enforces this one-to-one mapping).
@@ -40,9 +40,12 @@ npm run test:all     # everything
 ### Project layout
 
 ```
-src/registry.ts          101-tool catalog (id, name, description, category, route, icon, tags, status)
+src/registry.ts          103-tool catalog (id, name, description, category, route, icon, tags, status)
 src/tools/<id>.tsx       one lazily loaded component per tool
 src/lib/*.ts             pure, unit-tested logic (parsers, generators, converters, calculators)
+src/lib/draw/*           drawing engine shared by Diagram Editor and Whiteboard: scene model, connector routing,
+                         snapping, hand-drawn rendering, Mermaid import + auto-layout, draw.io import/export
+src/components/draw/*    the editor UI (canvas, interactions, library, format panel, SVG renderer)
 src/components/kit.tsx   shared tool kit: Panel, InputPane/OutputPane, copy/download, options, TransformTool, CommandBuilder
 src/components/*         shell: Layout, SearchPalette, JsonTree (virtualized), ConfigCompare, TraceView
 src/workers/*            Web Workers (CSV parsing, regex execution with timeout)
@@ -67,7 +70,7 @@ Why it works under a repository subpath (`https://<user>.github.io/<repo>/`):
 ## Privacy & security
 
 - Fully static. No network requests are made by the app itself (an e2e test asserts that loading the app and a tool page issues no cross-origin requests).
-- Tool input is **never persisted**. Only theme, favorites, recently used tools, and a recent-colors list are stored in `localStorage`.
+- Tool input is **never persisted**. Only theme, favorites, recently used tools, and a recent-colors list are stored in `localStorage` — with one exception: the **Diagram Editor** and **Whiteboard** autosave your drawing in this browser's `localStorage` so a refresh does not lose it. It is never uploaded; use *File → New* to clear it. Opened files and pasted images are validated before use (only `data:image/*` sources are accepted).
 - Passwords/UUIDs use `crypto.getRandomValues` / `crypto.randomUUID` (rejection sampling avoids modulo bias). Hashes and HMAC use Web Crypto.
 - Markdown and SVG are sanitized with DOMPurify before rendering; Mermaid runs in `strict` mode; JSONPath filters run in a restricted evaluator; user regexes run in a Web Worker with a 2-second kill switch against catastrophic backtracking.
 - Tools that handle credentials (JWT, HMAC, secrets, `.env`, comparators) show warnings; sensitive config values are masked by default.
@@ -81,4 +84,5 @@ Why it works under a repository subpath (`https://<user>.github.io/<repo>/`):
 - **QR camera scanning** needs HTTPS (GitHub Pages provides it) and camera permission; image upload always works.
 - **Snowflake decoding** depends on the epoch/bit layout you choose — presets exist for Twitter, Discord and Instagram.
 - **XPath** is XPath 1.0 (xmldom + xpath).
+- **Diagram Editor / Whiteboard**: no real-time collaboration (there is no backend), no shape rotation, and no multi-page documents. `.drawio` import covers common shapes, text, colours and connectors (not every stencil, and containers become plain shapes); freehand ink is skipped when exporting to `.drawio` because draw.io has no equivalent. PDF export uses the browser's print dialog. Very large drawings may exceed `localStorage` and then autosave switches off (use File → Save).
 - **Offline** support relies on the service worker, so a first online visit is required.
