@@ -1,0 +1,40 @@
+@import "tailwindcss";
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+}
+:root {
+  --background: #fafaf9; --foreground: #1c1917; --card: #ffffff; --muted: #f1f0ee; --muted-foreground: #6b665f;
+  --border: #e4e2de; --input: #d6d3ce; --primary: #0f766e; --primary-foreground: #ffffff; --accent: #e6f2f0;
+  --destructive: #b91c1c; --success: #15803d; --warning: #b45309;
+}
+.dark {
+  --background: #111110; --foreground: #ecebe8; --card: #181817; --muted: #222120; --muted-foreground: #9a958d;
+  --border: #2c2a28; --input: #3a3835; --primary: #2dd4bf; --primary-foreground: #04201c; --accent: #14302c;
+  --destructive: #f87171; --success: #4ade80; --warning: #fbbf24;
+}
+* { border-color: var(--border); }
+html, body, #root { height: 100%; }
+body { background: var(--background); color: var(--foreground); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+::selection { background: color-mix(in srgb, var(--primary) 30%, transparent); }
+textarea, input, select { font-family: inherit; }
+.mono { font-family: var(--font-mono); font-size: 13px; line-height: 1.55; }
+mark.hl { background: color-mix(in srgb, var(--warning) 35%, transparent); color: inherit; border-radius: 2px; }
+.scroll-thin::-webkit-scrollbar { width: 8px; height: 8px; }
+.scroll-thin::-webkit-scrollbar-thumb { background: var(--input); border-radius: 4px; }
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}

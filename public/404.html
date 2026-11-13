@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>DevPocket</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script>
+    // GitHub Pages serves this file for unknown paths. DevPocket uses hash routing (#/tools/<id>), so
+    // convert a path-style deep link such as /DevPocket/tools/json-formatter into /DevPocket/#/tools/json-formatter.
+    (function () {
+      var l = location, parts = l.pathname.split('/').filter(Boolean);
+      var routes = ['tools', 'category', 'favorites', 'recent'];
+      var i = parts.findIndex(function (p) { return routes.indexOf(p) >= 0; });
+      var base = '/' + (i > 0 ? parts.slice(0, i).join('/') + '/' : i === 0 ? '' : parts.length ? parts[0] + '/' : '');
+      var rest = i >= 0 ? '/' + parts.slice(i).join('/') : '';
+      l.replace(l.origin + base + (rest ? '#' + rest : '') + (i >= 0 ? l.search : ''));
+    })();
+  </script>
+</head>
+<body><p>Redirecting to DevPocket…</p></body>
+</html>
