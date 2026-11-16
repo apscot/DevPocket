@@ -78,6 +78,7 @@ const rows: Row[] = [
   ['qr-generator', 'QR Code Generator', 'security', 'QrCode', 'Generate QR codes as PNG or SVG.', 'qr code generator'],
   // D — devops
   ['env-toolkit', '.env Toolkit', 'devops', 'Settings2', 'Parse, validate, format and convert .env files.', 'env dotenv parse format json'],
+  ['swagger-viewer', 'Swagger / OpenAPI Viewer', 'devops', 'FileJson', 'Browse OpenAPI 3.x and Swagger 2.0 specs: endpoints, schemas, examples, cURL and lint. YAML or JSON.', 'swagger openapi api spec viewer visualizer rest endpoints schema yaml docs redoc', 1],
   ['env-compare', '.env Comparator', 'devops', 'FileDiff', 'Compare two .env files with secret masking.', 'env dotenv compare diff'],
   ['gitignore-generator', '.gitignore Generator', 'devops', 'GitBranch', 'Combine templates for Java, Node, IDEs and OSes.', 'gitignore generator templates'],
   ['dockerfile-generator', 'Dockerfile Generator', 'devops', 'Container', 'Dockerfiles for Java, Spring Boot, Node, React and static apps.', 'docker dockerfile generator'],

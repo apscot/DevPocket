@@ -206,3 +206,19 @@ test.describe('New tools', () => {
     })
   })
 })
+
+test.describe('Swagger viewer', () => {
+  test('renders sample spec, filters, expands an endpoint and shows cURL', async ({ page }) => {
+    await page.goto('/#/tools/swagger-viewer')
+    await expect(page.getByTestId('endpoint')).toHaveCount(6)
+    await page.getByLabel('Search path, summary, operationId…').fill('pets/{petId}')
+    await expect(page.getByTestId('endpoint')).toHaveCount(2)
+    await page.getByTestId('endpoint').first().getByRole('button').first().click()
+    await expect(page.getByText('operationId:').first()).toBeVisible()
+    await expect(page.locator('pre').filter({ hasText: 'curl -X' }).first()).toContainText('/pets/')
+    await page.getByRole('tab', { name: /Schemas/ }).click()
+    await expect(page.getByRole('button', { name: 'Order' })).toBeVisible()
+    await page.getByLabel('Spec', { exact: true }).fill('nope: 1')
+    await expect(page.getByRole('alert')).toContainText('Not an OpenAPI')
+  })
+})

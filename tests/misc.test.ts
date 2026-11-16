@@ -12,9 +12,9 @@ import { contrastRatio, hslToRgb, luminance, palette, parseColor, rgbToHsl, sugg
 import { explainRegex } from '@/lib/regexExplain'
 
 describe('Registry', () => {
-  it('contains exactly 103 unique, available tools with valid metadata', () => {
-    expect(TOOLS).toHaveLength(103)
-    expect(new Set(TOOLS.map((t) => t.id)).size).toBe(103)
+  it('contains exactly 104 unique, available tools with valid metadata', () => {
+    expect(TOOLS).toHaveLength(104)
+    expect(new Set(TOOLS.map((t) => t.id)).size).toBe(104)
     for (const t of TOOLS) {
       expect(t.status, t.id).toBe('available'); expect(t.route).toBe(`/tools/${t.id}`); expect(CATEGORIES.some((c) => c.id === t.category), t.id).toBe(true)
       expect(t.name && t.description && t.icon && t.tags.length, t.id).toBeTruthy()
@@ -27,11 +27,11 @@ describe('Registry', () => {
   })
   it('category counts match the spec', () => {
     const n = (c: string) => TOOLS.filter((t) => t.category === c).length
-    expect([n('data'), n('java'), n('security'), n('devops'), n('text'), n('datetime'), n('visual'), n('browser')]).toEqual([23, 12, 12, 15, 15, 9, 10, 7])
+    expect([n('data'), n('java'), n('security'), n('devops'), n('text'), n('datetime'), n('visual'), n('browser')]).toEqual([23, 12, 12, 16, 15, 9, 10, 7])
   })
   it('search matches name, description and tags and filters by category', () => {
     expect(searchTools('jwt')[0].id).toBe('jwt-decoder'); expect(searchTools('kubectl').map((t) => t.id)).toContain('kubectl-cheatsheet'); expect(searchTools('yaml', 'java').every((t) => t.category === 'java')).toBe(true)
-    expect(searchTools('zzzzqqq')).toHaveLength(0); expect(searchTools('')).toHaveLength(103); expect(toolById('json-diff')?.name).toBe('JSON Diff')
+    expect(searchTools('zzzzqqq')).toHaveLength(0); expect(searchTools('')).toHaveLength(104); expect(toolById('json-diff')?.name).toBe('JSON Diff')
   })
 })
 

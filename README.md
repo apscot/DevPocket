@@ -1,18 +1,18 @@
 # DevPocket
 
-**103 privacy-first developer utilities that run entirely in your browser.**
+**104 privacy-first developer utilities that run entirely in your browser.**
 No backend, no accounts, no analytics, no uploads — all processing is local, and the app keeps working offline after its first load.
 
 JSON · Spring Boot / Java · YAML & SQL · JWT & hashing · Docker / Git / Kubernetes · logs · dates & cron · Mermaid / SVG / colors · regex / XPath / JSONPath · and more.
 
-## Tools (103)
+## Tools (104)
 
 | Category | Count | Tools |
 |---|---|---|
 | **JSON, Data & Files** | 23 | JSON Formatter · Minifier · Viewer · Tree Browser · Escape/Unescape · JSON→CSV · CSV→JSON · CSV Viewer · CSV→SQL · JSON→JSON Schema · JSON Schema Validator · JSON→TypeScript · JSON→Zod · JSON Diff · Text Diff · JSON Data Explorer · Mock Data Generator · Random JSON Generator · Big Number Converter · String Length Calculator · JSON→TOON · JSON→Protobuf · JSON Visualizer (Graph) |
 | **Java, Spring & Backend** | 12 | Spring Properties Comparator · Java Exception Formatter · Java Stack Trace Formatter · JSON→Java DTO · JSON→YAML · YAML→JSON · YAML Formatter · YAML Validator · SQL Formatter · SQL Inline Variable Replacer · Java `String.format` Tester · UUID Generator |
 | **Encoding, Security & HTTP** | 12 | JWT Decoder · URL Inspector · URL Encoder/Decoder · Base64 · Base64↔Hex · Hash & Checksum · HMAC Generator/Verifier · Password Generator · Secret Detector & Redactor · HTTP Header Analyzer · cURL Generator · QR Code Generator |
-| **DevOps & Config** | 15 | .env Toolkit · .env Comparator · .gitignore Generator · Dockerfile Generator · Docker Compose Generator · GitHub Actions Generator · GitHub Actions Explainer · CIDR/Subnet Calculator · Docker Commands · Tar Commands · Disk Usage (`du`) · Git Helper · Kubernetes Cheatsheet · MySQL Commands · PostgreSQL Commands |
+| **DevOps & Config** | 16 | .env Toolkit · .env Comparator · .gitignore Generator · Dockerfile Generator · Docker Compose Generator · GitHub Actions Generator · GitHub Actions Explainer · CIDR/Subnet Calculator · Docker Commands · Tar Commands · Disk Usage (`du`) · Git Helper · Kubernetes Cheatsheet · Swagger / OpenAPI Viewer · MySQL Commands · PostgreSQL Commands |
 | **Text, Logs & Productivity** | 15 | Text Toolbox · Case Converter · Word Counter · Invisible Character Detector · Log & Privacy Workbench · Java Log Comparator · Log Timestamp Converter · Text Deduplicator · Markdown Viewer & Exporter (Mermaid → Azure DevOps wiki / Word / PDF) · Markdown Table Generator · Clipboard Text Cleaner · Template String Replacer · ASCII Directory Tree · ASCII Art Generator · Keyboard Event Viewer |
 | **Date, Time & Calculation** | 9 | Date Difference · Timezone Comparator · Cron Builder (Unix / Spring / Quartz) · Stopwatch · Countdown · Snowflake ID Decoder · Discord Timestamp Generator · Number Base Converter · CSS Unit Converter |
 | **Visual, Diagram & Design** | 10 | **Diagram Editor** (draw.io-style: shape library, smart connectors, Mermaid import, `.drawio` import/export) · **Whiteboard** (infinite canvas: pen, sticky notes, shapes, hand-drawn look) · Mermaid Editor · SVG Preview & Editor · Color Picker · Contrast Checker · HEX/RGB/HSL Converter · Palette Generator · Box Shadow Generator · Code Screenshot Generator |
@@ -40,7 +40,7 @@ npm run test:all     # everything
 ### Project layout
 
 ```
-src/registry.ts          103-tool catalog (id, name, description, category, route, icon, tags, status)
+src/registry.ts          104-tool catalog (id, name, description, category, route, icon, tags, status)
 src/tools/<id>.tsx       one lazily loaded component per tool
 src/lib/*.ts             pure, unit-tested logic (parsers, generators, converters, calculators)
 src/lib/draw/*           drawing engine shared by Diagram Editor and Whiteboard: scene model, connector routing,
