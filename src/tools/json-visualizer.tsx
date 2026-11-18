@@ -1,21 +1,26 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Maximize2, ZoomIn, ZoomOut } from 'lucide-react'
+import { Expand, Maximize2, Minimize2, ZoomIn, ZoomOut } from 'lucide-react'
 import { Button, CopyButton, Empty, InputPane, Notice, Panel, SearchBox, Select, useDebounced } from '@/components/kit'
 import { buildGraph, rowY, ROW_H, PAD, CHAR_W, type GNode } from '@/lib/graph'
 import { useParsedJson } from '@/hooks/useParsedJson'
+import { useFullscreen } from '@/hooks/useFullscreen'
+import { cn } from '@/lib/cn'
 import { downloadText } from '@/lib/util'
 import { SAMPLE_JSON } from '@/lib/samples'
 
-const H = 640
+const H0 = 640
 const colors: Record<string, string> = { string: 'var(--success)', number: 'var(--primary)', boolean: 'var(--warning)', null: 'var(--muted-foreground)', object: 'var(--foreground)', array: 'var(--foreground)' }
 export default function JsonVisualizer() {
   const [text, setText] = useState(''); const [q, setQ] = useState(''); const dq = useDebounced(q, 200); const [depth, setDepth] = useState('99')
   const [sel, setSel] = useState<number | null>(null)
+  const fs = useFullscreen(); const [vh, setVh] = useState(() => window.innerHeight)
+  useEffect(() => { const f = () => setVh(window.innerHeight); window.addEventListener('resize', f); document.addEventListener('fullscreenchange', f); return () => { window.removeEventListener('resize', f); document.removeEventListener('fullscreenchange', f) } }, [])
+  const H = fs.on ? Math.max(320, vh - 150) : H0
   const { data, error, empty } = useParsedJson(text)
   const graph = useMemo(() => (empty || error ? null : buildGraph(data, { maxDepth: Number(depth) })), [data, empty, error, depth])
   const [view, setView] = useState({ x: 20, y: 20, k: 1 }); const box = useRef<HTMLDivElement>(null); const svg = useRef<SVGSVGElement>(null)
   const drag = useRef<{ x: number; y: number; vx: number; vy: number } | null>(null)
-  const fit = useCallback(() => { if (!graph || !box.current) return; const w = box.current.clientWidth; const k = Math.min(1, (w - 40) / Math.max(1, graph.width), (H - 40) / Math.max(1, graph.height)); setView({ k, x: 20, y: Math.max(20, (H - graph.height * k) / 2) }) }, [graph])
+  const fit = useCallback(() => { if (!graph || !box.current) return; const w = box.current.clientWidth; const k = Math.min(1, (w - 40) / Math.max(1, graph.width), (H - 40) / Math.max(1, graph.height)); setView({ k, x: 20, y: Math.max(20, (H - graph.height * k) / 2) }) }, [graph, H])
   useEffect(() => { fit(); setSel(null) }, [fit])
   useEffect(() => {
     const el = svg.current; if (!el) return
@@ -28,12 +33,13 @@ export default function JsonVisualizer() {
   const selected = graph && sel !== null ? graph.nodes[sel] : null
   const exportSvg = () => { if (!svg.current) return; const cs = getComputedStyle(document.documentElement); let s = new XMLSerializer().serializeToString(svg.current).replace(/var\((--[\w-]+)\)/g, (_m, v) => cs.getPropertyValue(v).trim()); downloadText('json-graph.svg', s, 'image/svg+xml') }
   return (
-    <div className="grid gap-3 lg:grid-cols-[minmax(260px,320px)_1fr]">
-      <InputPane value={text} onChange={setText} sample={SAMPLE_JSON} accept=".json" rows={22} />
+    <div className={cn('grid gap-3', !fs.on && 'lg:grid-cols-[minmax(260px,320px)_1fr]')}>
+      {!fs.on && <InputPane value={text} onChange={setText} sample={SAMPLE_JSON} accept=".json" rows={22} />}
+      <div ref={fs.ref} className={cn('min-w-0', fs.cls)}>
       <Panel title="Graph" actions={<>
         <SearchBox value={q} onChange={setQ} placeholder="Search nodes" className="w-40" />
         <Select aria-label="Max depth" value={depth} onChange={(e) => setDepth(e.target.value)} className="h-8 w-28"><option value="99">All levels</option>{[1, 2, 3, 4, 5].map((d) => <option key={d} value={d}>Depth {d}</option>)}</Select>
-        <Button size="icon" aria-label="Zoom out" onClick={() => zoom(1 / 1.25)}><ZoomOut size={14} /></Button><Button size="icon" aria-label="Zoom in" onClick={() => zoom(1.25)}><ZoomIn size={14} /></Button><Button size="icon" aria-label="Fit to screen" onClick={fit}><Maximize2 size={14} /></Button>
+        <Button size="icon" aria-label="Zoom out" onClick={() => zoom(1 / 1.25)}><ZoomOut size={14} /></Button><Button size="icon" aria-label="Zoom in" onClick={() => zoom(1.25)}><ZoomIn size={14} /></Button><Button size="icon" aria-label="Fit to screen" onClick={fit}><Maximize2 size={14} /></Button><Button size="icon" aria-label={fs.on ? 'Exit full screen' : 'Full screen'} aria-pressed={fs.on} onClick={() => void fs.toggle()}>{fs.on ? <Minimize2 size={14} /> : <Expand size={14} />}</Button>
         <Button onClick={exportSvg} disabled={!graph}>SVG</Button></>}>
         {error ? <Notice kind="error">{error}</Notice> : !graph ? <Empty>Paste JSON to render it as a node graph. Drag to pan, scroll to zoom, click a node to inspect its path.</Empty> : (<>
           {graph.truncated && <Notice kind="warn" className="mb-2">Large document: some branches are collapsed (node limit or depth). Lower the depth or paste a smaller subset to see everything.</Notice>}
@@ -61,6 +67,7 @@ export default function JsonVisualizer() {
           {selected && <div className="mt-2 flex flex-wrap items-center gap-2 text-sm"><span className="text-muted-foreground">Selected:</span><code className="mono rounded bg-muted px-1.5" data-testid="selected-path">{selected.path}</code><CopyButton text={selected.path} label="Copy path" /></div>}
         </>)}
       </Panel>
+      </div>
     </div>
   )
 }

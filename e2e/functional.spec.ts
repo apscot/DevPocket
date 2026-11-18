@@ -222,3 +222,40 @@ test.describe('Swagger viewer', () => {
     await expect(page.getByRole('alert')).toContainText('Not an OpenAPI')
   })
 })
+
+test.describe('Full screen and growing output', () => {
+  test('JSON Formatter output grows with the JSON height', async ({ page }) => {
+    await page.goto('/#/tools/json-formatter')
+    const big = JSON.stringify({ items: Array.from({ length: 120 }, (_, i) => ({ id: i, name: `n${i}` })) })
+    await page.getByLabel('Input', { exact: true }).fill(big)
+    const out = page.getByLabel('Output', { exact: true })
+    await expect(out).toHaveValue(/"id": 119/)
+    const [h, sh] = await out.evaluate((el: HTMLTextAreaElement) => [el.clientHeight, el.scrollHeight])
+    expect(h).toBeGreaterThan(2000); expect(sh - h).toBeLessThan(8)
+  })
+  test('Diagram Editor can go full screen and back', async ({ page }) => {
+    await page.goto('/#/tools/diagram-editor')
+    const root = page.getByTestId('diagram-editor')
+    const before = (await root.boundingBox())!
+    await page.getByRole('button', { name: 'Full screen' }).click()
+    await expect(page.getByRole('button', { name: 'Exit full screen' })).toBeVisible()
+    const vp = page.viewportSize()!
+    await expect.poll(async () => (await root.boundingBox())!.height).toBeGreaterThanOrEqual(vp.height - 4)
+    expect((await root.boundingBox())!.height).toBeGreaterThan(before.height)
+    await page.getByRole('button', { name: 'Exit full screen' }).click()
+    await expect(page.getByRole('button', { name: 'Full screen' })).toBeVisible()
+  })
+  test('JSON Visualizer graph can go full screen and back', async ({ page }) => {
+    await page.goto('/#/tools/json-visualizer')
+    await page.getByRole('button', { name: 'Sample' }).click()
+    const g = page.getByTestId('json-graph')
+    const before = (await g.boundingBox())!
+    await page.getByRole('button', { name: 'Full screen' }).click()
+    await expect(page.getByRole('button', { name: 'Exit full screen' })).toBeVisible()
+    const vp = page.viewportSize()!
+    await expect.poll(async () => (await g.boundingBox())!.height).not.toBe(before.height)
+    expect((await g.boundingBox())!.height).toBeLessThanOrEqual(vp.height)
+    await page.getByRole('button', { name: 'Exit full screen' }).click()
+    await expect.poll(async () => (await g.boundingBox())!.height).toBe(before.height)
+  })
+})

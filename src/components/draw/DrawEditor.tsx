@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ArrowUpRight, Circle, Copy, Diamond, Download, Eraser, FilePlus2, FolderOpen, Hand, Highlighter, ImagePlus, Keyboard, LayoutTemplate, Maximize, Minus, MousePointer2, Network, PanelLeft, Pen, Plus, Redo2, Save, Scan,
-  Shapes, Share2, Spline, Square, StickyNote, Triangle, Type, Undo2, Wand2, Zap, Printer, Image as ImageIcon, Grid3x3, Magnet, Presentation, ChevronsLeftRight,
+  Shapes, Share2, Spline, Square, StickyNote, Triangle, Type, Undo2, Wand2, Zap, Printer, Image as ImageIcon, Grid3x3, Magnet, Presentation, ChevronsLeftRight, Maximize2, Minimize2,
 } from 'lucide-react'
 import type { Doc, EdgeEl, El, End, Node, Pt, Rect, ShapeEl, ShapeKind, Side, Style } from '@/lib/draw/types'
 import { FONTS, defaultStyle, emptyDoc, isNode } from '@/lib/draw/types'
@@ -14,6 +14,7 @@ import { shapeGeom } from '@/lib/draw/shapes'
 import { lineHeight, wrap } from '@/lib/draw/text'
 import { TEMPLATES, autoLayout, graphToEls, parseMermaidFlowchart } from '@/lib/draw/layout'
 import { fromDrawio, toDrawio } from '@/lib/draw/drawio'
+import { useFullscreen } from '@/hooks/useFullscreen'
 import { svgToPng } from '@/lib/raster'
 import { copyText, downloadBlob, downloadText } from '@/lib/util'
 import { cn } from '@/lib/cn'
@@ -623,6 +624,8 @@ export default function DrawEditor({ mode }: { mode: Mode }) {
       <input ref={imgRef} type="file" accept="image/*" className="hidden" data-testid="image-input" onChange={(e) => { const f = e.target.files?.[0]; if (f) void addImageFile(f); e.target.value = '' }} />
     </>
   )
+  const fs = useFullscreen()
+  const fsBtn = <IconBtn label={fs.on ? 'Exit full screen' : 'Full screen'} on={fs.on} onClick={() => void fs.toggle()}>{fs.on ? <Minimize2 size={14} /> : <Maximize2 size={14} />}</IconBtn>
   const status = <span className="text-[11px] text-muted-foreground" title="Your drawing is autosaved in this browser only. It is never uploaded.">{save === 'off' ? 'Autosave off (drawing too large)' : save === 'saving' ? 'Saving…' : 'Saved in this browser'}</span>
   const pageApi = { bg: doc.bg, grid: doc.grid, gridSize: doc.gridSize, snap: doc.snap }
   const props = <PropsPanel sel={selEls} defaults={defaults} api={propsApi} page={pageApi} showPage mode={mode} />
@@ -661,7 +664,7 @@ export default function DrawEditor({ mode }: { mode: Mode }) {
   }
 
   return (
-    <div className="flex flex-col gap-2" data-testid="diagram-editor">
+    <div ref={fs.ref} className={cn('flex flex-col gap-2', fs.on && 'h-full', fs.cls)} data-testid="diagram-editor">
       {hiddenInputs}
       <div className="flex flex-wrap items-center gap-1.5 rounded-xl border bg-card p-1.5" role="toolbar" aria-label="Diagram toolbar">
         {fileMenu}
@@ -682,10 +685,11 @@ export default function DrawEditor({ mode }: { mode: Mode }) {
         <IconBtn label="Toggle grid" on={doc.grid} onClick={() => setPage({ grid: !doc.grid })}><Grid3x3 size={14} /></IconBtn>
         <IconBtn label="Snap to grid and guides" on={doc.snap} onClick={() => setPage({ snap: !doc.snap })}><Magnet size={14} /></IconBtn>
         <IconBtn label="Keyboard shortcuts (?)" onClick={() => setModal('help')}><Keyboard size={14} /></IconBtn>
+        {fsBtn}
         <div className="ml-auto flex items-center gap-2 px-1">{status}</div>
       </div>
       {libOpen && <div className="h-64 overflow-hidden rounded-xl border bg-card lg:hidden"><Library onAdd={(it) => { dropItem(it); setLibOpen(false) }} onDragStart={(it, e) => { e.dataTransfer.setData('application/x-devpocket-lib', JSON.stringify(it)) }} /></div>}
-      <div className="flex h-[calc(100vh-250px)] min-h-[560px] flex-col overflow-hidden rounded-xl border bg-card lg:flex-row">
+      <div className={cn('flex flex-col overflow-hidden rounded-xl border bg-card lg:flex-row', fs.on ? 'min-h-0 flex-1' : 'h-[calc(100vh-250px)] min-h-[560px]')}>
         <aside className="hidden w-56 shrink-0 border-r lg:block" aria-label="Shape library"><Library onAdd={(it) => dropItem(it)} onDragStart={(it, e) => { e.dataTransfer.setData('application/x-devpocket-lib', JSON.stringify(it)); e.dataTransfer.effectAllowed = 'copy' }} /></aside>
         <div className="relative min-h-[360px] min-w-0 flex-1">{canvas}</div>
         <aside className="scroll-thin max-h-72 w-full shrink-0 overflow-y-auto border-t lg:max-h-none lg:w-64 lg:border-l lg:border-t-0" aria-label="Format panel">{props}</aside>

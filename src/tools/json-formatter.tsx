@@ -5,7 +5,7 @@ import { SAMPLE_JSON } from '@/lib/samples'
 export default function JsonFormatter() {
   return (
     <TransformTool
-      sample={SAMPLE_JSON} placeholder='{"paste": "JSON here"}' accept=".json,application/json,text/plain" filename="formatted.json" mime="application/json"
+      sample={SAMPLE_JSON} placeholder='{"paste": "JSON here"}' accept=".json,application/json,text/plain" growOutput filename="formatted.json" mime="application/json"
       options={[
         { key: 'mode', label: 'Mode', type: 'select', default: 'format', options: [['format', 'Format (pretty)'], ['minify', 'Minify']] },
         { key: 'indent', label: 'Indent', type: 'select', default: '2', options: [['2', '2 spaces'], ['4', '4 spaces'], ['8', '8 spaces'], ['tab', 'Tab']], show: (o) => o.mode === 'format' },

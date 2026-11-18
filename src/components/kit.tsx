@@ -103,13 +103,24 @@ export function InputPane({ title = 'Input', value, onChange, placeholder, sampl
   )
 }
 
-export function OutputPane({ title = 'Output', value, filename, mime, rows = 14, actions, children, className }: { title?: string; value: string; filename?: string; mime?: string; rows?: number; actions?: ReactNode; children?: ReactNode; className?: string }) {
+export function OutputPane({ title = 'Output', value, filename, mime, rows = 14, grow, actions, children, className }: { grow?: boolean; title?: string; value: string; filename?: string; mime?: string; rows?: number; actions?: ReactNode; children?: ReactNode; className?: string }) {
   return (
     <Panel className={className} title={title} actions={<>{actions}<CopyButton text={value} />{filename && <DownloadButton text={value} filename={filename} mime={mime} disabled={!value} />}</>}>
-      {children ?? <Textarea readOnly aria-label={title} value={value} rows={rows} className="w-full bg-muted/40" />}
+      {children ?? <GrowArea title={title} value={value} rows={rows} grow={grow} />}
       {value && <p className="mt-1.5 text-[11px] text-muted-foreground">{value.length.toLocaleString()} chars · {fmtBytes(byteLength(value))}</p>}
     </Panel>
   )
+}
+
+/** Read-only output box. With `grow`, its height follows the content instead of scrolling inside a fixed box. */
+function GrowArea({ title, value, rows, grow }: { title: string; value: string; rows: number; grow?: boolean }) {
+  const ref = useRef<HTMLTextAreaElement>(null)
+  useEffect(() => {
+    const el = ref.current; if (!grow || !el) return
+    const fit = () => { el.style.height = 'auto'; el.style.height = `${el.scrollHeight + 2}px` }
+    fit(); const ro = new ResizeObserver(() => { if (el.clientWidth) fit() }); ro.observe(el); return () => ro.disconnect()
+  }, [value, grow])
+  return <Textarea ref={ref} readOnly aria-label={title} value={value} rows={rows} className={cn('w-full bg-muted/40', grow && 'resize-none overflow-hidden')} />
 }
 
 export function useDebounced<T>(v: T, ms = 200): T {
@@ -155,6 +166,8 @@ export interface TransformConfig {
   emptyHint?: string
   extra?: (input: string, output: string, opts: Record<string, any>) => ReactNode
   stacked?: boolean
+  /** Let the output box grow to fit its content */
+  growOutput?: boolean
   success?: (output: string, input: string, opts: Record<string, any>) => string | null
   /** Render output differently (e.g. highlighted) */
   render?: (output: string, opts: Record<string, any>) => ReactNode
@@ -186,7 +199,7 @@ export function TransformTool(cfg: TransformConfig) {
         <div className="flex min-w-0 flex-col gap-3">
           {state.err && <Notice kind="error">{state.err}</Notice>}
           {ok && <Notice kind="success">{ok}</Notice>}
-          <OutputPane title={cfg.outputTitle ?? 'Output'} value={state.out} filename={fname} mime={cfg.mime}>
+          <OutputPane title={cfg.outputTitle ?? 'Output'} value={state.out} filename={fname} mime={cfg.mime} grow={cfg.growOutput}>
             {!input.trim() ? <Empty>{cfg.emptyHint ?? 'Paste or upload input to see the result here.'}</Empty> : cfg.render && state.out ? cfg.render(state.out, opts) : undefined}
           </OutputPane>
           {cfg.extra?.(input, state.out, opts)}
